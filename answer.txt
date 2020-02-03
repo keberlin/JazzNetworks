@@ -1,0 +1,29 @@
+In order to provide a int nobjs() function the C++ class would need to keep track of all of its created instances.
+
+The best way of doing this is to overload the new and delete operators and define a static member variable. So something like this:
+
+class MyClass
+{
+    public:
+        void* operator new(size_t size)
+        {
+            void* instance = malloc(size);
+            number_of_instances++;
+            return instance;
+        }
+        void operator delete(void* instance)
+        {
+            free(instance);
+            number_of_instances--;
+        }
+        static int nobjs()
+        {
+            return number_of_instances;
+        }
+    private:
+        static int number_of_instances;
+};
+
+int MyClass::number_of_instances = 0;
+
+The nobjs() function can then be a static function which means it accessed through the class as MyClass::nobjs().
